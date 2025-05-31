@@ -1,0 +1,35 @@
+// mfa-alt.js
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ],
+  partials: [Partials.Channel]
+});
+
+// 🔑 BURAYA TOKENİNİ YAZ (user token - dikkatli ol!)
+const token = "Hesap Tokeniniz";
+
+client.on('ready', () => {
+  console.log(`✅ ${client.user.tag} olarak giriş yapıldı.`);
+});
+
+client.on('Şifreniz', async (message) => {
+  if (message.author.id !== client.user.id) return;
+
+  if (message.content === 'url koy') {
+    message.channel.send('');
+  }
+
+  if (message.content === '!sil') {
+    const msgs = await message.channel.messages.fetch({ limit: 10 });
+    msgs.forEach(msg => {
+      if (msg.author.id === client.user.id) msg.delete().catch(() => {});
+    });
+  }
+});
+
+client.login(token);

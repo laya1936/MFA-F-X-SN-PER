@@ -1,0 +1,18 @@
+// dosyaAdı: node-cikisi.js
+
+console.clear();
+
+const mesajlar = [
+  "⚠️ Ananı Sikerim",
+  "💩 Salak Orospu Evladı Kim ",
+  "🤖 KAKA ",
+  "💀 RAT YEDİN LOGUN DÜŞTÜ EZİK SANALCİİİ",
+  "📛 VİOLENTİA SİKER",
+  "😂 Discord.gg/VİOLENTİA",
+];
+
+const random = mesajlar[Math.floor(Math.random() * mesajlar.length)];
+
+console.log("\n============== [ CMD ÇIKIŞI ] ==============\n");
+console.log(random);
+console.log("\n============================================\n");

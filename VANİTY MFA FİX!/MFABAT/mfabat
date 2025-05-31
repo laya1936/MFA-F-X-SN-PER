@@ -1,0 +1,67 @@
+const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
+
+const token = "YOUR_USER_TOKEN"; // ⚠️ Self token, dikkatli ol kanka
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+  partials: [Partials.Channel, Partials.Message]
+});
+
+const snipeMap = new Map(); // kanal ID → son silinen mesaj
+
+client.on('ready', () => {
+  console.log(`✅ Giriş yapıldı: ${client.user.tag}`);
+  console.log('💬 Snipe sistemi aktif.');
+});
+
+// 🔥 MESAJ SİLİNİNCE
+client.on('messageDelete', async (msg) => {
+  if (!msg.guild || !msg.content || msg.author.bot) return;
+
+  snipeMap.set(msg.channel.id, {
+    content: msg.content,
+    author: msg.author.tag,
+    id: msg.author.id,
+    time: new Date().toLocaleString()
+  });
+
+  console.log(`🗑️ Mesaj silindi: ${msg.author.tag}: "${msg.content}" (${msg.channel.name})`);
+});
+
+// 🛠️ MESAJ DÜZENLENİNCE
+client.on('messageUpdate', async (oldMsg, newMsg) => {
+  if (!oldMsg.content || !newMsg.content || oldMsg.author?.bot) return;
+
+  console.log(`✏️ Düzenlendi [${oldMsg.author.tag}]`);
+  console.log(`  Eski: ${oldMsg.content}`);
+  console.log(`  Yeni: ${newMsg.content}`);
+});
+
+// ❗ KOMUT: !snipe
+client.on('messageCreate', async (message) => {
+  if (message.author.id !== client.user.id) return;
+
+  if (message.content.toLowerCase() === '!snipe') {
+    const sniped = snipeMap.get(message.channel.id);
+    if (!sniped) {
+      return message.reply("❌ Ananin Ami Götü");
+    }
+
+    const embed = new EmbedBuilder()
+      .setTitle("🕵️‍♂️ Son Silinen Mesaj")
+      .addFields(
+        { name: 'Yazan', value: `${sniped.author} (<@${sniped.id}>)` },
+        { name: 'İçerik', value: sniped.content },
+        { name: 'Zaman', value: sniped.time }
+      )
+      .setColor("Red");
+
+    message.reply({ embeds: [embed] });
+  }
+});
+
+client.login(token);
